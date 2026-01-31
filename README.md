@@ -1,2 +1,496 @@
-# PixelCraft
-JavaScript, Python, SCC
+<!DOCTYPE html>
+<!-- saved from url=(0046)file:///C:/Users/ceden/Desktop/PixelCraft.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelCraft</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="./PixelCraftproyecto_files/css2" rel="stylesheet">
+    <link rel="stylesheet" href="./PixelCraftproyecto_files/all.min.css">
+    <style>
+/* 1. CONFIGURACIÓN GENERAL */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f4f4f4;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin: 0;
+  padding: 80px 0;
+  align-items: center;
+  font-family: 'Inter', sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* Instrucción y Controles */
+.controls {
+  background: #333;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 30px;
+  font-size: 14px;
+  position: fixed;
+  top: 20px;
+  z-index: 1000;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.btn-present {
+  background: #00e676;
+  border: none;
+  color: #000;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: 'Inter';
+}
+
+/* 2. CONTENEDOR DE LA DIAPOSITIVA */
+.slide-container {
+  background-color: #ffffff;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  height: 720px;
+  width: 1280px;
+  padding: 60px 80px;
+  position: relative;
+  overflow: hidden;
+  color: #333333;
+  transition: all 0.5s ease;
+}
+
+/* Decoración Minimalista */
+.slide-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 80px;
+  width: 60px;
+  height: 4px;
+  background-color: #333333;
+}
+
+/* 3. ESTILOS EDITABLES */
+[contenteditable="true"] {
+  outline: none;
+  transition: background 0.3s;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+
+[contenteditable="true"]:hover {
+  background: rgba(0, 0, 0, 0.03);
+  cursor: text;
+}
+
+/* 4. TIPOGRAFÍA */
+h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 72px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+h2.slide-title {
+  font-size: 28px;
+  margin-bottom: 50px;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+}
+
+h3 {
+  font-size: 24px;
+  margin-bottom: 15px;
+  font-weight: 600;
+}
+
+p, li {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #555555;
+  margin-bottom: 15px;
+  font-weight: 300;
+}
+
+/* 5. LAYOUTS */
+.content-area {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.index-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+}
+
+.index-list {
+  list-style: none;
+  padding: 0;
+}
+
+.index-list li {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 15px 0;
+  display: flex;
+  align-items: center;
+}
+
+.index-list li .number {
+  color: #ccc;
+  font-family: 'Playfair Display', serif;
+  margin-right: 20px;
+  font-size: 20px;
+}
+
+.two-column {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.tile {
+  flex: 1;
+  background-color: #fcfcfc;
+  border: 1px solid #f0f0f0;
+  padding: 40px 30px;
+  text-align: center;
+}
+
+.icon {
+  font-size: 32px;
+  margin-bottom: 20px;
+}
+
+.quote-layout blockquote {
+  font-family: 'Playfair Display', serif;
+  font-size: 44px;
+  font-style: italic;
+  text-align: center;
+}
+
+.img-placeholder {
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 350px;
+  color: #ccc;
+  font-style: italic;
+}
+
+/* MODO PRESENTACIÓN */
+body.presenting {
+  padding: 0;
+  background: #000;
+  overflow: hidden;
+}
+
+body.presenting .slide-container {
+  box-shadow: none;
+  border-radius: 0;
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  display: none; /* Se controla con JS */
+}
+
+body.presenting .slide-container.active {
+  display: flex;
+}
+
+    </style>
+</head>
+<body id="mainBody">
+
+<div class="controls">
+    <span><i class="fa-solid fa-pen"></i> Haz clic en los textos para editar</span>
+    <button class="btn-present" onclick="togglePresentation()"><i class="fa-solid fa-play"></i> Presentar</button>
+</div>
+
+<!-- Diapositiva 1 -->
+<div class="slide-container active" id="s1">
+    <div class="content-area">
+        <p contenteditable="true" style="text-transform: uppercase; letter-spacing: 3px; font-size: 14px; color: #888;">Segunda parte del proyecto</p>
+        <h1 contenteditable="true">PixelCraft</h1>
+        <p class="subtitle" contenteditable="true" style="font-size: 24px; color: #888;">Integrantes: Cedeño Carlos/Garces Rosa/Bazurto Samara/Macías Melanie/Reyes Emily</p><div>Curso: 2BGU "A"</div><p></p>
+    </div>
+</div>
+
+<!-- Diapositiva 2: Índice -->
+<div class="slide-container" id="s2">
+    <h2 class="slide-title" contenteditable="true">Índice</h2>
+    <div class="content-area">
+        <div class="index-layout">
+            <ul class="index-list">
+                <li><span class="number">01</span> <span contenteditable="true">Presentación de PixelCraft</span></li>
+                <li><span class="number">02</span> <span contenteditable="true">Moda de los productos</span></li>
+                <li><span class="number">03</span> <span contenteditable="true">Recursos humanos, materiales, financieors e intagibles</span></li>
+                <li><span class="number">04</span> <span contenteditable="true">Organigrama estructural</span></li>
+                <li><span class="number">05</span> <span contenteditable="true">Organigrama funcional</span></li>
+            </ul>
+            <ul class="index-list">
+                <li><span class="number">06</span> <span contenteditable="true">Motivaciones económicas y no económicas</span></li>
+                <li><span class="number">07</span> <span contenteditable="true">Medidas de control</span></li>
+                <li><span class="number">08</span> <span contenteditable="true">Etica y responsabilidad social del emprendimiento</span></li>
+                <li><span class="number">09</span> <span contenteditable="true">Costo de producción, precio de venta al público y ganancia</span></li>
+                <li><span class="number">10</span> <span contenteditable="true">Contacto</span></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 3 ================= -->
+<div class="slide-container" id="s3">
+    <div class="content-area" style="text-align: center;">
+        <h1 contenteditable="true" style="font-size: 60px;">01. Presentación de PixelCraft</h1>
+        <p contenteditable="true">
+            PixelCraft es un emprendimiento enfocado en la prestación de servicios digitales,
+            especializado en el diseño y desarrollo de páginas web, soluciones tecnológicas
+            y programación orientada a mejorar la presencia digital de los negocios.
+        </p>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 4 ================= -->
+<div class="slide-container" id="s4">
+    <h2 class="slide-title" contenteditable="true">Moda de los productos</h2>
+    <div class="content-area">
+        <div class="two-column">
+            <div class="img-placeholder">[Tendencias digitales]</div>
+            <div>
+                <h3 contenteditable="true">Productos y servicios ofrecidos</h3>
+                <p contenteditable="true">
+                    PixelCraft ofrece servicios como la creación de páginas web informativas,
+                    tiendas virtuales, mantenimiento de sitios web, diseño gráfico digital,
+                    optimización básica para buscadores (SEO) y soluciones de programación
+                    adaptadas a las necesidades del cliente.
+                </p>
+                <p contenteditable="true">
+                    Estos servicios permiten a las empresas mejorar su imagen digital,
+                    aumentar su alcance y competir en un mercado cada vez más tecnológico.
+                </p>
+                <p contenteditable="true">
+                    La moda actual en el ámbito empresarial se centra en servicios digitales
+                    modernos, páginas web responsivas, diseños atractivos y funcionales,
+                    así como en la automatización de procesos y el uso de tecnología
+                    para mejorar la experiencia del usuario.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 5 ================= -->
+<div class="slide-container" id="s5">
+    <h2 class="slide-title" contenteditable="true">Recursos del emprendimiento</h2>
+    <div class="content-area">
+        <p contenteditable="true"><strong>Recursos humanos:</strong> personal con conocimientos en programación, diseño web y manejo de herramientas digitales.</p>
+        <p contenteditable="true"><strong>Recursos materiales:</strong> computadoras, conexión a internet y software especializado.</p>
+        <p contenteditable="true"><strong>Recursos financieros:</strong> inversión inicial baja enfocada en herramientas digitales.</p>
+        <p contenteditable="true"><strong>Recursos intangibles:</strong> conocimientos técnicos, creatividad y capacidad de innovación.</p>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 6 ================= -->
+<div class="slide-container" id="s6">
+    <h2 class="slide-title" contenteditable="true">Organigrama estructural</h2>
+    <div class="content-area">
+        <div style="display:flex; flex-direction:column; align-items:center;">
+
+            <div class="tile">
+                <h3 contenteditable="true">Director General</h3>
+                <p contenteditable="true">Toma de decisiones y supervisión</p>
+            </div>
+
+            <div style="width:2px; height:40px; background:#ccc;"></div>
+
+            <div style="display:flex; gap:80px; position:relative;">
+                <div style="position:absolute; top:-20px; left:0; right:0; height:2px; background:#ccc;"></div>
+
+                <div class="tile">
+                    <h3 contenteditable="true">Área de Desarrollo</h3>
+                    <p contenteditable="true">Programación web y soluciones digitales</p>
+                </div>
+
+                <div class="tile">
+                    <h3 contenteditable="true">Área de Diseño</h3>
+                    <p contenteditable="true">Diseño gráfico y experiencia de usuario</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 7 ================= -->
+<div class="slide-container" id="s7">
+    <h2 class="slide-title" contenteditable="true">Organigrama funcional</h2>
+    <div class="content-area">
+        <div style="display:flex; justify-content:center; gap:60px; position:relative;">
+
+            <div style="position:absolute; top:-20px; left:10%; right:10%; height:2px; background:#ccc;"></div>
+
+            <div class="tile">
+                <h3 contenteditable="true">Dirección</h3>
+                <p contenteditable="true">Planificación de proyectos</p>
+                <p contenteditable="true">Control de calidad</p>
+                <p contenteditable="true">Comunicación con clientes</p>
+            </div>
+
+            <div class="tile">
+                <h3 contenteditable="true">Desarrollo</h3>
+                <p contenteditable="true">Programación web</p>
+                <p contenteditable="true">Mantenimiento de sitios</p>
+                <p contenteditable="true">Optimización del código</p>
+            </div>
+
+            <div class="tile">
+                <h3 contenteditable="true">Diseño</h3>
+                <p contenteditable="true">Diseño visual</p>
+                <p contenteditable="true">Interfaz de usuario</p>
+                <p contenteditable="true">Identidad digital</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 8 ================= -->
+<div class="slide-container" id="s8">
+    <h2 class="slide-title" contenteditable="true">Motivaciones</h2>
+    <div class="content-area">
+        <p contenteditable="true"><strong>Motivaciones económicas:</strong> generar ingresos mediante la venta de servicios digitales.</p>
+        <p contenteditable="true"><strong>Motivaciones no económicas:</strong> adquirir experiencia, desarrollar habilidades tecnológicas y apoyar a otros negocios.</p>
+    </div>
+</div>
+
+<!-- ================= DIAPOSITIVA 9 ================= -->
+<div class="slide-container" id="s9">
+    <h2 class="slide-title" contenteditable="true">Medidas de control</h2>
+    <div class="content-area">
+        <p contenteditable="true">
+            Para garantizar el correcto funcionamiento del emprendimiento, PixelCraft
+            aplica diversas medidas de control que permiten organizar el trabajo,
+            optimizar los recursos y asegurar la calidad de los servicios ofrecidos.
+        </p>
+
+        <p contenteditable="true">
+            Entre las principales medidas se encuentra la planificación de actividades,
+            donde se establecen cronogramas de trabajo, fechas de entrega y prioridades
+            para cada proyecto desarrollado.
+        </p>
+
+        <p contenteditable="true">
+            También se realiza la revisión constante del código y del diseño web,
+            verificando que cumplan con los estándares de calidad, funcionalidad y
+            seguridad antes de ser entregados al cliente.
+        </p>
+
+        <p contenteditable="true">
+            Además, PixelCraft evalúa la satisfacción del cliente una vez finalizado
+            cada proyecto, tomando en cuenta sugerencias y observaciones con el fin
+            de mejorar continuamente los servicios ofrecidos.
+        </p>
+    </div>
+</div>
+
+
+<!-- ================= DIAPOSITIVA 10 ================= -->
+<div class="slide-container" id="s10">
+    <h2 class="slide-title" contenteditable="true">Ética y responsabilidad social</h2>
+    <div class="content-area">
+        <p contenteditable="true">
+            PixelCraft basa su trabajo en principios éticos sólidos, actuando siempre con
+            honestidad, transparencia y compromiso frente a sus clientes y colaboradores.
+            Cada proyecto es desarrollado respetando los acuerdos establecidos y cumpliendo
+            los plazos de entrega acordados.
+        </p>
+
+        <p contenteditable="true">
+            El emprendimiento respeta la privacidad y confidencialidad de la información
+            proporcionada por los clientes, evitando el uso indebido de datos y garantizando
+            la seguridad de los sistemas desarrollados.
+        </p>
+
+        <p contenteditable="true">
+            Además, PixelCraft promueve el uso responsable de la tecnología, utilizando
+            software legal, evitando el plagio y fomentando prácticas profesionales dentro
+            del ámbito de la programación y el diseño digital.
+        </p>
+
+        <p contenteditable="true">
+            Desde el punto de vista social, el emprendimiento busca apoyar a pequeños
+            negocios y emprendimientos locales, ayudándolos a mejorar su presencia digital
+            y a adaptarse a las nuevas tendencias tecnológicas del mercado.
+        </p>
+    </div>
+</div>
+
+
+<!-- ================= DIAPOSITIVA 11 ================= -->
+<div class="slide-container" id="s11">
+    <h2 class="slide-title" contenteditable="true">Costos, precio de venta y ganancia</h2>
+    <div class="content-area">
+
+        <p contenteditable="true">
+            <strong>Costos de producción (mensuales):</strong>
+        </p>
+        <p contenteditable="true">
+            • Internet y servicios digitales: $25  
+            <br>• Software y herramientas: $20  
+            <br>• Energía eléctrica: $15  
+            <br>• Total de costos: <strong>$60</strong>
+        </p>
+
+        <p contenteditable="true">
+            <strong>Precio de venta del servicio:</strong>
+        </p>
+        <p contenteditable="true">
+            • Desarrollo de página web básica: <strong>$200</strong>
+        </p>
+
+        <p contenteditable="true">
+            <strong>Ganancia estimada:</strong>
+        </p>
+        <p contenteditable="true">
+            • Ingreso por servicio: $200  
+            <br>• Costos aproximados por proyecto: $60  
+            <br>• Ganancia neta estimada: <strong>$140</strong>
+        </p>
+
+        <p contenteditable="true" style="color:#888; font-size:16px;">
+            *Los valores son una simulación referencial para fines académicos.*
+        </p>
+
+    </div>
+</div>
+
+
+
+
+<!-- ================= DIAPOSITIVA 12 ================= -->
+<div class="slide-container" id="s15">
+    <div class="content-area" style="text-align: center;">
+        <h1 contenteditable="true">Contacto</h1>
+        <p contenteditable="true">PixelCraft – Servicios Digitales</p>
+        <p contenteditable="true">Correo: cedenogomezca@gmail.com</p>
+    </div>
+</div>
+</body></html>
